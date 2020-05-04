@@ -31,9 +31,8 @@ class AppFixtures extends Fixture
             $user = new User();
 
             $genre = $faker->randomElement($genres);
-
             $picture = 'https://randomuser.me/api/portraits/';
-            $pictureId = $faker->numberBetween(1, 99) . '.jpeg';
+            $pictureId = $faker->numberBetween(1, 99) . '.jpg';
             $picture .= ($genre == 'male' ? 'men/' : 'women/') . $pictureId;
 
             $hash = $this->encoder->encodePassword($user, 'password');
@@ -82,3 +81,7 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 }
+
+
+
+
