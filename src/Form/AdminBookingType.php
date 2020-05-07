@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\Ad;
+use App\Entity\Booking;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Annotation\Route;
+
+class AdminBookingType extends ApplicationType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('startDate', DateType::class, [
+                'widget'=>'single_text'
+            ])
+            ->add('endDate', DateType::class, [
+                'widget'=>'single_text'
+            ])
+            ->add('comment')
+            ->add('booker', EntityType::class, [
+                'class'=> User::class,
+                'choice_label'=>
+                    // 'fullName'
+                    function($user){
+                return $user->getFirstName(). " ". strtoupper($user->getLastName());
+                }
+            ])
+             ->add('ad', EntityType::class, [
+                 'class'=>Ad::class,
+                 'choice_label'=>'title'
+             ])
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => Booking::class,
+        ]);
+    }
+
+
+}
