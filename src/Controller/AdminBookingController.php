@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Booking;
 use App\Form\AdminBookingType;
 use App\Repository\BookingRepository;
+use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,12 +15,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminBookingController extends AbstractController
 {
     /**
-     * @Route("/admin/bookings", name="admin_booking_index")
+     * @Route("/admin/bookings/{page}", name="admin_booking_index", requirements={"page": "\d+"})
      */
-    public function index(BookingRepository $repo)
+    public function index(BookingRepository $repo, $page = 1, PaginationService $pagination)
     {
+        $pagination->setEntityClass(Booking::class);
+        $pagination->setCurrentPage($page);
+
         return $this->render('admin/booking/index.html.twig', [
-            'bookings'=>$repo->findAll()
+            'pagination'=>$pagination
         ]);
     }
 
@@ -30,12 +34,13 @@ class AdminBookingController extends AbstractController
      *
      * @return Response
      */
-    public function edit(Booking $booking, Request $request, EntityManagerInterface $manager){
-        $form = $this->createForm(AdminBookingType::class,$booking);
+    public function edit(Booking $booking, Request $request, EntityManagerInterface $manager)
+    {
+        $form = $this->createForm(AdminBookingType::class, $booking);
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $booking->setAmount(0);
             $manager->persist($booking);
             $manager->flush();
@@ -50,8 +55,8 @@ class AdminBookingController extends AbstractController
 
 
         return $this->render('admin/booking/edit.html.twig', [
-            'form'=>$form->createView(),
-            'booking'=>$booking
+            'form' => $form->createView(),
+            'booking' => $booking
         ]);
     }
 
